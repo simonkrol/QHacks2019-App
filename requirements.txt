@@ -33,7 +33,7 @@ llvmlite==0.27.0
 Markdown==3.0.1
 MarkupSafe==1.1.0
 matplotlib==3.0.2
-numba==0.42.1
+numba==0.42.0
 numpy==1.16.1
 pandas==0.24.0
 parso==0.3.2
