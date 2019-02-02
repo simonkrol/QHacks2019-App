@@ -13,8 +13,8 @@ filename = "finalized_model.sav"
 s = "tmp.wav"
 loaded_model = pickle.load(open(filename, 'rb'))
 
-df = pd.read_csv('../../input/train.csv')
-Classes = df.Class.unique().tolist()
+
+Classes = ['siren', 'street_music', 'drilling', 'dog_bark', 'children_playing', 'gun_shot', 'engine_idling', 'air_conditioner', 'jackhammer', 'car_horn']
 intervalLen = 4
 duration = 0
 
