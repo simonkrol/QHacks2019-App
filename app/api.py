@@ -8,7 +8,7 @@ import pandas as pd
 import math
 
 
-app = Flask(__name__)
+api = Flask(__name__)
 filename = "finalized_model.sav"
 s = "tmp.wav"
 loaded_model = pickle.load(open(filename, 'rb'))
@@ -18,11 +18,11 @@ Classes = ['siren', 'street_music', 'drilling', 'dog_bark', 'children_playing', 
 intervalLen = 4
 duration = 0
 
-@app.route('/',methods=['GET'])
+@api.route('/',methods=['GET'])
 def hello_world():
     return 'Hello World!'
 
-@app.route('/customerupdate',methods=['GET','POST'])
+@api.route('/customerupdate',methods=['GET','POST'])
 def customerupdate():
     global duration
     global intervalLen
@@ -96,4 +96,4 @@ def getPrediction(predictions):
     else:
         return "IDLE"
 if __name__ == '__main__':
-   app.run(debug = True)
+   api.run(debug = True)
