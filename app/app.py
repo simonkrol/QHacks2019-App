@@ -6,6 +6,7 @@ from flask import send_file
 import numpy as np
 import pandas as pd
 import math
+from flask_bootstrap import Bootstrap
 
 
 
@@ -26,7 +27,7 @@ duration = 0
 
 @app.route('/api', methods=['GET'])
 def upload_file():
-   return render_template('upload.html')
+   return render_template('upload2.html')
 
 @app.route('/api',methods=['POST'])
 def api():
@@ -36,7 +37,7 @@ def api():
     print(file.filename)
 
     if(not file.filename.endswith(".wav")):
-        return render_template('upload.html')+"Invalid File, Please use a .wav\n"
+        return render_template('upload2.html')+"Invalid File, Please use a .wav\n"
     file.save(s, buffer_size=16384)
 
     new, rate = librosa.load(s)
@@ -81,7 +82,7 @@ def api():
                     final+=f"->{splitComped[i-1].split(':')[0]}\n"
                 final+=f"{splitComp[1]}:{splitComp[0]}"
                 temp = splitComp[1]
-    return render_template("./upload.html", result=final.split("\n"))
+    return render_template("./upload2.html", result=final.split("\n"))
 
 
 
@@ -127,5 +128,14 @@ def getPrediction(predictions):
         return Classes[np.argmax(predictions)]
     else:
         return "No Match"
+
+# def create_app():
+#   app = Flask(__name__)
+#   #Bootstrap(app)
+
+#   return app
+
 if __name__ == '__main__':
-   app.run(debug = True)
+    #app = create_app()
+    Bootstrap(app)
+    app.run(debug = True)
