@@ -6,24 +6,20 @@ from flask import send_file
 import numpy as np
 import pandas as pd
 import math
-from flask_bootstrap import Bootstrap
 
 
 
 
 app = Flask(__name__)
 filename = "finalized_model.sav"
-s = "tmp.wav"
+tmp_wav = "tmp.wav"
 loaded_model = pickle.load(open(filename, 'rb'))
 
 
 Classes = ['Siren', 'Street Music', 'Drilling', 'Dog Barking', 'Children Playing', 'Gun Shot', 'Engine Idling', 'Air Conditioner', 'Jackhammer', 'Car Horn']
-intervalLen = 4
+interval_len = 4
 duration = 0
 
-# @app.route('/',methods=['GET'])
-# def hello_world():
-#     return 'Hello World!'
 
 @app.route('/api', methods=['GET'])
 def upload_file():
@@ -31,57 +27,59 @@ def upload_file():
 
 @app.route('/api',methods=['POST'])
 def api():
+
     global duration
-    global intervalLen
+    global interval_len
+
+
     file = request.files['fileInput']
-    print(file.filename)
-
     if(not file.filename.endswith(".wav")):
-        return render_template('upload.html')+"Invalid File, Please use a .wav\n"
-    file.save(s, buffer_size=16384)
+        return render_template('upload.html', ["Invalid File, please upload a .wav file"])
 
-    new, rate = librosa.load(s)
+    file.save(tmp_wav, buffer_size=16384) #Here we save the file because I couldnt figure out how to load it with librosa otherwise
+    new, rate = librosa.load(tmp_wav)
 
-    intervalLen = 4
+    interval_len = 4
     num_samples = len(new)
     duration = math.floor(librosa.get_duration(y=new, sr=rate))
-    print(duration)
     if(duration==0):
-        print("DURATION IS 0!!!!\n\n\n\n\n\n")
-    if(duration<intervalLen):
-        intervalLen = duration
+        duration=1
+    if(duration<interval_len):
+        interval_len = duration
 
-    frame_len = math.ceil(intervalLen * num_samples/duration)
-
-    hop_len = math.floor((frame_len/intervalLen))
+    #Determine the length of frame we need to split up the file
+    frame_len = math.ceil(interval_len * num_samples/duration)
+    hop_len = math.floor((frame_len/interval_len))
+    #The frame function creates a subset of the data, of length frame, then hops forward the hop_length before taking another subset
     y_out = librosa.util.frame(new, frame_length=frame_len, hop_length=hop_len)
-    mf=[]
-    for i in range(len(y_out[0])):
 
-        mf.append(np.mean(librosa.feature.mfcc(y=y_out[:, i], sr=rate, n_mfcc=200).T, axis = 0))
-    a = ""
-    predictions = loaded_model.predict_proba(mf)
-    a=""
+    formed_data=[]
+    for i in range(len(y_out[0])):
+        formed_data.append(np.mean(librosa.feature.mfcc(y=y_out[:, i], sr=rate, n_mfcc=200).T, axis = 0))
+
+    predictions = loaded_model.predict_proba(formed_data)
+    predicted_string=""
     for i in range(len(predictions)):
-        a+=getPrediction(predictions[i])
-        a+=f",{i}:{i+intervalLen} \n"
-    compString = parse(a)
-    splitComped  =compString.split("\n")
+        predicted_string+=getPrediction(predictions[i])
+        predicted_string+=f",{i}:{i+interval_len} \n"
+
+    scored_string = parse(predicted_string)
+    split_score  =scored_string.split("\n")
     temp=""
     final = ""
     if(duration==1):
-        final = f"{splitComped[0].split(':')[1]}->{splitComped[0].split(':')[0]}"
+        final = f"{split_score[0].split(':')[1]}->{split_score[0].split(':')[0]}"
     else:
-        for i in range(len(splitComped)-1):
-            splitComp = splitComped[i].split(":")
-            if(i==len(splitComped)-2):
-                final+=f"->{int(splitComped[i-1].split(':')[0])+1}\n"
+        for i in range(len(split_score)-1):
+            scored_string = split_score[i].split(":")
+            if(i==len(split_score)-2):
+                final+=f"->{int(split_score[i-1].split(':')[0])+1}\n"
                 break
-            if(splitComp[1]!=temp):
+            if(scored_string[1]!=temp):
                 if(temp!=""):
-                    final+=f"->{splitComped[i-1].split(':')[0]}\n"
-                final+=f"{splitComp[1]}:{splitComp[0]}"
-                temp = splitComp[1]
+                    final+=f"->{split_score[i-1].split(':')[0]}\n"
+                final+=f"{scored_string[1]}:{scored_string[0]}"
+                temp = scored_string[1]
     return render_template("./upload.html", result=final.split("\n"))
 
 
@@ -109,7 +107,7 @@ def parse(st):
 def score(vals, iteration):
     if(vals.count("No Match")>=3 or vals.count("No Match")==len(vals)):
         return "No Match"
-    if(iteration>=duration-intervalLen):
+    if(iteration>=duration-interval_len):
         return vals[len(vals)-1]
     curWinner = vals[0]
     i=1
@@ -123,19 +121,13 @@ def score(vals, iteration):
 
 
 def getPrediction(predictions):
+    """ Determine if a prediction is justified, if low, assume that no sound stood out"""
     maximum = max(predictions)
     if(maximum>=0.42):
         return Classes[np.argmax(predictions)]
     else:
         return "No Match"
 
-# def create_app():
-#   app = Flask(__name__)
-#   #Bootstrap(app)
-
-#   return app
 
 if __name__ == '__main__':
-    #app = create_app()
-    Bootstrap(app)
     app.run(debug = True)
