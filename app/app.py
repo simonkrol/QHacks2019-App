@@ -1,7 +1,7 @@
 import librosa
 from sklearn.ensemble import RandomForestClassifier
 import pickle
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask import send_file
 import numpy as np
 import pandas as pd
@@ -20,15 +20,19 @@ Classes = ['siren', 'street_music', 'drilling', 'dog_bark', 'children_playing', 
 intervalLen = 4
 duration = 0
 
-@app.route('/',methods=['GET'])
-def hello_world():
-    return 'Hello World!'
+# @app.route('/',methods=['GET'])
+# def hello_world():
+#     return 'Hello World!'
 
-@app.route('/api',methods=['GET','POST'])
+@app.route('/api')
+def upload_file():
+   return render_template('./upload.html')
+
+@app.route('/endpoint',methods=['GET','POST'])
 def api():
     global duration
     global intervalLen
-    file = request.files['wav']
+    file = request.files['file']
     file.save(s, buffer_size=16384)
 
     new, rate = librosa.load(s)
@@ -62,9 +66,6 @@ def api():
         if(i==len(splitComped)-2):
             final+=f"->{int(splitComped[i-1].split(':')[0])+1}\n"
             break
-        print(len(splitComp))
-        print(i)
-        print(splitComp)
         if(splitComp[1]!=temp):
             if(temp!=""):
                 final+=f"->{splitComped[i-1].split(':')[0]}\n"
@@ -101,7 +102,6 @@ def score(vals, iteration):
         return vals[len(vals)-1]
     curWinner = vals[0]
     i=1
-    print(vals)
     while(curWinner == "IDLE"):
         curWinner = vals[i]
         i+=1
