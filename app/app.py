@@ -8,7 +8,9 @@ import pandas as pd
 import math
 
 
-api = Flask(__name__)
+
+
+app = Flask(__name__)
 filename = "finalized_model.sav"
 s = "tmp.wav"
 loaded_model = pickle.load(open(filename, 'rb'))
@@ -18,15 +20,15 @@ Classes = ['siren', 'street_music', 'drilling', 'dog_bark', 'children_playing', 
 intervalLen = 4
 duration = 0
 
-@api.route('/',methods=['GET'])
+@app.route('/',methods=['GET'])
 def hello_world():
     return 'Hello World!'
 
-@api.route('/customerupdate',methods=['GET','POST'])
-def customerupdate():
+@app.route('/api',methods=['GET','POST'])
+def api():
     global duration
     global intervalLen
-    file = request.files['document']
+    file = request.files['wav']
     file.save(s, buffer_size=16384)
 
     new, rate = librosa.load(s)
@@ -46,19 +48,38 @@ def customerupdate():
 
         mf.append(np.mean(librosa.feature.mfcc(y=y_out[:, i], sr=rate, n_mfcc=200).T, axis = 0))
     a = ""
-    for i in range(len(mf)):
-        a+=(getPrediction(loaded_model.predict_proba([mf[i]])[0]))
+    predictions = loaded_model.predict_proba(mf)
+    a=""
+    for i in range(len(predictions)):
+        a+=getPrediction(predictions[i])
         a+=f",{i}:{i+intervalLen} \n"
+    compString = parse(a)
+    splitComped  =compString.split("\n")
+    temp=""
+    final = ""
+    for i in range(len(splitComped)-1):
+        splitComp = splitComped[i].split(":")
+        if(i==len(splitComped)-2):
+            final+=f"->{int(splitComped[i-1].split(':')[0])+1}\n"
+            break
+        print(len(splitComp))
+        print(i)
+        print(splitComp)
+        if(splitComp[1]!=temp):
+            if(temp!=""):
+                final+=f"->{splitComped[i-1].split(':')[0]}\n"
+            final+=f"{splitComp[1]}:{splitComp[0]}"
+            temp = splitComp[1]
+    return final
 
 
-    return parse(a)
 
-def parse(str):
+def parse(st):
     scoring=[]
     for i in range(duration):
         scoring.append([])
 
-    for a in str.split("\n"):
+    for a in st.split("\n"):
         if(a==""):
             continue
         split = a.split(",")
@@ -74,12 +95,13 @@ def parse(str):
     return st
 
 def score(vals, iteration):
-    if(vals.count("IDLE")>=3):
+    if(vals.count("IDLE")>=3 or vals.count("IDLE")==len(vals)):
         return "IDLE"
     if(iteration>=duration-intervalLen):
         return vals[len(vals)-1]
     curWinner = vals[0]
     i=1
+    print(vals)
     while(curWinner == "IDLE"):
         curWinner = vals[i]
         i+=1
@@ -91,9 +113,9 @@ def score(vals, iteration):
 
 def getPrediction(predictions):
     maximum = max(predictions)
-    if(maximum>=0.4):
+    if(maximum>=0.42):
         return Classes[np.argmax(predictions)]
     else:
         return "IDLE"
 if __name__ == '__main__':
-   api.run(debug = True)
+   app.run(debug = True)
