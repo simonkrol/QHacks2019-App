@@ -27,7 +27,7 @@ duration = 0
 
 @app.route('/api', methods=['GET'])
 def upload_file():
-   return render_template('upload2.html')
+   return render_template('upload.html')
 
 @app.route('/api',methods=['POST'])
 def api():
@@ -37,7 +37,7 @@ def api():
     print(file.filename)
 
     if(not file.filename.endswith(".wav")):
-        return render_template('upload2.html')+"Invalid File, Please use a .wav\n"
+        return render_template('upload.html')+"Invalid File, Please use a .wav\n"
     file.save(s, buffer_size=16384)
 
     new, rate = librosa.load(s)
@@ -82,7 +82,7 @@ def api():
                     final+=f"->{splitComped[i-1].split(':')[0]}\n"
                 final+=f"{splitComp[1]}:{splitComp[0]}"
                 temp = splitComp[1]
-    return render_template("./upload2.html", result=final.split("\n"))
+    return render_template("./upload.html", result=final.split("\n"))
 
 
 

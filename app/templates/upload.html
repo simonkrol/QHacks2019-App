@@ -1,29 +1,44 @@
 <html>
-    <head>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script type=text/javascript>
-            $(document).ready(
-                function(){
-                    $('input:file').change(
-                        function(){
-                            if ($(this).val()) {
-                                $('input:submit').attr('disabled',false);
-                            }
-                        }
-                        );
-                });
-        </script>
-    </head>
-    <body>
-        <form action = "http://8db2c7b3.ngrok.io/api" method = "POST"
-            enctype = "multipart/form-data">
-            <input type = "file" name = "fileInput" id="fileInput" />
-            <input type = "submit" value="submit" disabled/>
+
+<head>
+    <title>Urbanears</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('input:file').change(function () {
+                if ($(this).val()) { $('button:submit').attr('disabled', false); }
+            });
+        });
+    </script>
+</head>
+
+<body>
+
+    <h1 class="text-center">Urbanears</h1>
+    <hr />
+    <div class="container">
+
+        <form class="form" action="http://287effcc.ngrok.io/api" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="fileInput">File input</label>
+                <input type="file" name="fileInput" class="btn btn-default btn-lg btn-block" id="fileInput" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block" value="submit" disabled>Submit</button>
+            </div>
         </form>
-        <div>
+        <hr />
+        <div id="result">
             {% for para in result %}
-             <p>{{para}}</p>
+                <p class="h4">{{para}}</p>
             {% endfor %}
         </div>
-    </body>
+    </div>
+
+
+</body>
+
 </html>
