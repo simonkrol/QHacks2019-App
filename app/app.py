@@ -16,7 +16,7 @@ s = "tmp.wav"
 loaded_model = pickle.load(open(filename, 'rb'))
 
 
-Classes = ['siren', 'street_music', 'drilling', 'dog_bark', 'children_playing', 'gun_shot', 'engine_idling', 'air_conditioner', 'jackhammer', 'car_horn']
+Classes = ['Siren', 'Street Music', 'Drilling', 'Dog Barking', 'Children Playing', 'Gun Shot', 'Engine Idling', 'Air Conditioner', 'Jackhammer', 'Car Horn']
 intervalLen = 4
 duration = 0
 
@@ -24,15 +24,19 @@ duration = 0
 # def hello_world():
 #     return 'Hello World!'
 
-@app.route('/api')
+@app.route('/api', methods=['GET'])
 def upload_file():
-   return render_template('./upload.html')
+   return render_template('upload.html')
 
-@app.route('/endpoint',methods=['GET','POST'])
+@app.route('/api',methods=['POST'])
 def api():
     global duration
     global intervalLen
-    file = request.files['file']
+    file = request.files['fileInput']
+    print(file.filename)
+
+    if(not file.filename.endswith(".wav")):
+        return render_template('upload.html')+"Invalid File, Please use a .wav\n"
     file.save(s, buffer_size=16384)
 
     new, rate = librosa.load(s)
@@ -40,6 +44,9 @@ def api():
     intervalLen = 4
     num_samples = len(new)
     duration = math.floor(librosa.get_duration(y=new, sr=rate))
+    print(duration)
+    if(duration==0):
+        print("DURATION IS 0!!!!\n\n\n\n\n\n")
     if(duration<intervalLen):
         intervalLen = duration
 
@@ -61,17 +68,20 @@ def api():
     splitComped  =compString.split("\n")
     temp=""
     final = ""
-    for i in range(len(splitComped)-1):
-        splitComp = splitComped[i].split(":")
-        if(i==len(splitComped)-2):
-            final+=f"->{int(splitComped[i-1].split(':')[0])+1}\n"
-            break
-        if(splitComp[1]!=temp):
-            if(temp!=""):
-                final+=f"->{splitComped[i-1].split(':')[0]}\n"
-            final+=f"{splitComp[1]}:{splitComp[0]}"
-            temp = splitComp[1]
-    return final
+    if(duration==1):
+        final = f"{splitComped[0].split(':')[1]}->{splitComped[0].split(':')[0]}"
+    else:
+        for i in range(len(splitComped)-1):
+            splitComp = splitComped[i].split(":")
+            if(i==len(splitComped)-2):
+                final+=f"->{int(splitComped[i-1].split(':')[0])+1}\n"
+                break
+            if(splitComp[1]!=temp):
+                if(temp!=""):
+                    final+=f"->{splitComped[i-1].split(':')[0]}\n"
+                final+=f"{splitComp[1]}:{splitComp[0]}"
+                temp = splitComp[1]
+    return render_template("./upload.html", result=final.split("\n"))
 
 
 
@@ -96,13 +106,13 @@ def parse(st):
     return st
 
 def score(vals, iteration):
-    if(vals.count("IDLE")>=3 or vals.count("IDLE")==len(vals)):
-        return "IDLE"
+    if(vals.count("No Match")>=3 or vals.count("No Match")==len(vals)):
+        return "No Match"
     if(iteration>=duration-intervalLen):
         return vals[len(vals)-1]
     curWinner = vals[0]
     i=1
-    while(curWinner == "IDLE"):
+    while(curWinner == "No Match"):
         curWinner = vals[i]
         i+=1
 
@@ -116,6 +126,6 @@ def getPrediction(predictions):
     if(maximum>=0.42):
         return Classes[np.argmax(predictions)]
     else:
-        return "IDLE"
+        return "No Match"
 if __name__ == '__main__':
    app.run(debug = True)
