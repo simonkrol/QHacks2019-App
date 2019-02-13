@@ -1,25 +1,3 @@
-# from app import app
-# from app import routes
-
-# if __name__ == '__main__':
-#     app.run()
-
-
-
-
-# @app.route('/')
-# @app.route('/index')
-# def index():
-#     return render_template('index.html')
-
-# @app.route('/map', methods=['GET'])
-# def findTrain():
-#     line = request.args.get('line')
-#     direction = request.args.get('direction')
-#     coords = getTrainInfo(line, direction)
-#     return render_template('map.html', coords=coords)
-
-
 
 import librosa
 from sklearn.ensemble import RandomForestClassifier
