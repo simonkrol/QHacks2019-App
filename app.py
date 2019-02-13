@@ -1,3 +1,26 @@
+# from app import app
+# from app import routes
+
+# if __name__ == '__main__':
+#     app.run()
+
+
+
+
+# @app.route('/')
+# @app.route('/index')
+# def index():
+#     return render_template('index.html')
+
+# @app.route('/map', methods=['GET'])
+# def findTrain():
+#     line = request.args.get('line')
+#     direction = request.args.get('direction')
+#     coords = getTrainInfo(line, direction)
+#     return render_template('map.html', coords=coords)
+
+
+
 import librosa
 from sklearn.ensemble import RandomForestClassifier
 import pickle
@@ -8,9 +31,9 @@ import pandas as pd
 import math
 
 
-
-
 app = Flask(__name__)
+
+
 filename = "finalized_model.sav"
 tmp_wav = "tmp.wav"
 loaded_model = pickle.load(open(filename, 'rb'))
@@ -20,11 +43,11 @@ Classes = ['Siren', 'Street Music', 'Drilling', 'Dog Barking', 'Children Playing
 interval_len = 4
 duration = 0
 
-
+@app.route('/', methods = ['GET'])
 @app.route('/api', methods=['GET'])
 def upload_file():
    return render_template('upload.html')
-
+@app.route('/', methods = ['POST'])
 @app.route('/api',methods=['POST'])
 def api():
 
@@ -133,5 +156,11 @@ def getPrediction(predictions):
         return "No Match"
 
 
+
+
+
+
+
+
 if __name__ == '__main__':
-    app.run(debug = True)
+    app.run()

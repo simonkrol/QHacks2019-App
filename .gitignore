@@ -1,6 +1,6 @@
 .DS_Store
-app/finalized_model.sav
+finalized_model.sav
 lib
 bin
 include
-app/tmp.wav
+tmp.wav
