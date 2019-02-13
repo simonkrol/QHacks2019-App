@@ -1,7 +1,6 @@
 import numpy as np
 import librosa
 from itertools import chain, groupby
-# import pandas as pd
 import math
 
 class File:

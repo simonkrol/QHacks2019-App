@@ -8,7 +8,7 @@ tmp_wav = "tmp.wav"
 interval_len = 4
 classes = ['Siren', 'Street Music', 'Drilling', 'Dog Barking', 'Children Playing', 'Gun Shot', 'Engine Idling', 'Air Conditioner', 'Jackhammer', 'Car Horn']
 
-model = Model(filename, interval_len, tmp_wav, classes)
+model = Model(filename, interval_len, classes)
 
 
 @app.route('/', methods = ['GET'])
@@ -26,6 +26,7 @@ def api():
         return render_template('upload.html', ["Invalid File, please upload a .wav file"])
 
     file.save(tmp_wav, buffer_size=16384)
+    model.load_file(tmp_wav)
     return render_template("./upload.html", result=model.get_prediction())
 
 

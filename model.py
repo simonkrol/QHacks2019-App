@@ -1,7 +1,6 @@
 import os
 import pickle
 import numpy as np
-import pandas as pd
 from file import File
 import math
 
@@ -9,10 +8,9 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 class Model:
-    def __init__(self, model_location, interval_len, tmp_location, class_labels):
+    def __init__(self, model_location, interval_len, class_labels):
         self.loaded_model = pickle.load(open(model_location, 'rb'))
         self.interval_len = interval_len
-        self.tmp_location = tmp_location
         self.class_labels = class_labels
         self.string_prediction = []
 
