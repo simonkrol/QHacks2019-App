@@ -73,14 +73,18 @@ def api():
         for i in range(len(split_score)-1):
             scored_string = split_score[i].split(":")
             if(i==len(split_score)-2):
-                final+=f"->{int(split_score[i-1].split(':')[0])+1}\n"
+                final+=f" -> {int(split_score[i-1].split(':')[0])+1}\n"
                 break
             if(scored_string[1]!=temp):
                 if(temp!=""):
-                    final+=f"->{split_score[i-1].split(':')[0]}\n"
-                final+=f"{scored_string[1]}:{scored_string[0]}"
+                    final+=f" -> {split_score[i-1].split(':')[0]}\n"
+                final+=f"{scored_string[1]}: {scored_string[0]}"
                 temp = scored_string[1]
-    return render_template("./upload.html", result=final.split("\n"))
+    print(final.split("\n")[:-1])
+    split_final = final.split("\n")
+    if("" in split_final):
+        split_final.remove("")
+    return render_template("./upload.html", result=split_final)
 
 
 
