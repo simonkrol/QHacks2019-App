@@ -17,7 +17,7 @@ Install dependencies:
 ```
 pip install -r requirements.txt
 ```
-Since the model is too large to host on GitHub, it is not included in the repository.
+Since the model is too large to host on GitHub, it is not included in the repository. If you'd like, you can download the model I trained, from my [Google Drive](https://drive.google.com/open?id=1z7WXMsFGwOoIOmkicSlqo5g5qnyq06ft) (I've also included a few test files)
 
 ## Usage
 Start the server:
