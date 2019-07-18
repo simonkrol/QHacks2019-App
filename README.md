@@ -1,5 +1,8 @@
 # UrbanSound - QHacks2019 Project - [Github](https://github.com/simonkrol/QHacks2019-app)
 
+Model Training: https://github.com/simonkrol/QHacks2019
+
+
 ### Team Members:
 - [Simon Krol](https://github.com/simonkrol)
 
