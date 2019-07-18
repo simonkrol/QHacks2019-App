@@ -30,6 +30,6 @@ The result values are expressed as a list of Strings containing the events occur
 ```
 Sirens from 0 until 3 seconds
 Dog Barking from 4 until 9 seconds
-No Identifial Sound from 9 until 12 seconds
+No Identifiable Sound from 9 until 12 seconds
 Gun Shot at 13 seconds
 ```
