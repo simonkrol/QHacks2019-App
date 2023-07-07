@@ -15,6 +15,6 @@ python-dateutil==2.8.0
 pytz==2018.9
 resampy==0.2.1
 scikit-learn==0.20.2
-scipy==1.2.1
+scipy==1.10.0
 six==1.12.0
 Werkzeug==0.14.1
