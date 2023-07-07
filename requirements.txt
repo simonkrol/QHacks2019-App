@@ -5,7 +5,7 @@ Flask==1.0.2
 gunicorn==19.9.0
 itsdangerous==1.1.0
 Jinja2==2.10
-joblib==0.13.1
+joblib==1.2.0
 librosa==0.6.2
 llvmlite==0.27.1
 MarkupSafe==1.1.0
